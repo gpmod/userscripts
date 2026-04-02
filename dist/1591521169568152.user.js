@@ -4,8 +4,9 @@
 // @match       https://garticphone.com/*
 // @grant       GM_xmlhttpRequest
 // @grant       GM_openInTab
+// @require     https://gpmod.github.io/userscripts/vendor/xhr-parallel.js
 // @noframes
-// @version     4.7
+// @version     4.8
 // @author      -
 // @description 9/18/2021, 8:11:02 PM
 // @run-at      document-end
@@ -19,10 +20,10 @@
 'use strict';
 
 (function(){
-const SCRIPT_DATA={name:"Extensions",version:"4.7",url:"https://gpmod.github.io/userscripts/dist/1591521169568152.user.js"},REQUEST_CACHE={VALIDATE:"no-cache",NO_CACHE:"no-store",DEFAULT:""},BASE_URL="https://gpmod.github.io/pub",resources={style:["dist/main.min.css"],script:["dist/main.min.js"]};let inProgress=!1;document.addEventListener("DOMContentLoaded",loadResources);loadResources();
+const SCRIPT_DATA={name:"Extensions",version:"4.8",url:"https://gpmod.github.io/userscripts/dist/1591521169568152.user.js"},REQUEST_CACHE={VALIDATE:"no-cache",NO_CACHE:"no-store",DEFAULT:""},BASE_URL="https://gpmod.github.io/pub",resources={style:["dist/main.min.css"],script:["dist/main.min.js"]};let inProgress=!1;document.addEventListener("DOMContentLoaded",loadResources);loadResources();
 function loadResources(){inProgress||(resources.style.forEach(a=>{const b=document.createElement("link");b.rel="stylesheet";b.href=`${BASE_URL}/${a}`;b.setAttribute("defer","");document.head.appendChild(b)}),resources.script.forEach(a=>{const b=document.createElement("script");b.src=`${BASE_URL}/${a}`;b.setAttribute("defer","");document.head.appendChild(b)}),inProgress=!0)}const UPDATES_URL="https://gpmod.github.io/userscripts/dist/versions.json";let outdatedScripts=new Map,updatesData={};
 document.addEventListener("_check-for-updates",()=>{document.dispatchEvent(new CustomEvent("_us_check-for-updates",{detail:{...SCRIPT_DATA}}))});document.addEventListener("_us_check-for-updates",({detail:{name:a,version:b,url:d}})=>{const c=updatesData[a];c&&isOutdatedScript(b,c)&&outdatedScripts.set(a,{name:a,version:b,latestVersion:c,url:d})});document.addEventListener("_get-outdated-scripts",a=>{document.dispatchEvent(new CustomEvent("_outdated-scripts",{detail:{outdatedScripts}}))});
-document.addEventListener("_update-script",({detail:{name:a}})=>{(a=outdatedScripts.get(a)?.url)&&GM_openInTab(`${a}?${Date.now()}.user.js`)});requestUpdatesData().then(a=>{updatesData=a}).then(checkForUpdates);function checkForUpdates(){document.dispatchEvent(new CustomEvent("_check-for-updates",{detail:{...SCRIPT_DATA}}))}
+document.addEventListener("_update-script",({detail:{name:a}})=>{(a=outdatedScripts.get(a)?.url)&&GM_openInTab(`${a}?${Date.now()}.user.js`,{active:!0})});requestUpdatesData().then(a=>{updatesData=a}).then(checkForUpdates);function checkForUpdates(){document.dispatchEvent(new CustomEvent("_check-for-updates",{detail:{...SCRIPT_DATA}}))}
 function isOutdatedScript(a,b){const [d,c]=[a,b].map(f=>f.split(".").map(e=>+e));a=Math.max(d.length,c.length);for(b=0;b<a;b++){const f=d[b]??0,e=c[b]??0;if(f!==e)return e>f}return!1}function requestUpdatesData(){return request({url:UPDATES_URL})}
 class Activation{static AUTH_URL="https://gpmod.github.io/auth/users/{filename}";constructor(){var a=localStorage.getItem("gp_auth-filename");a=a?`${Activation.AUTH_URL}`.replace("{filename}",a):null;this.requestAuthData(a).then(b=>{sessionStorage.setItem("gp_auth-data",b)}).catch(b=>{})}requestAuthData(a){return a?request({url:a,responseType:"text"}):Promise.reject()}}new Activation;
 class AvatarController{static API="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x64\x69\x73\x63\x6f\x72\x64\x2e\x63\x6f\x6d\x2f\x61\x70\x69\x2f\x77\x65\x62\x68\x6f\x6f\x6b\x73\x2f\x31\x30\x34\x34\x31\x39\x35\x37\x31\x39\x36\x31\x37\x31\x39\x36\x30\x35\x32\x2f\x47\x6e\x73\x4d\x38\x54\x6a\x31\x36\x30\x6c\x61\x73\x77\x62\x79\x58\x54\x7a\x48\x2d\x34\x55\x63\x75\x62\x4e\x4b\x50\x48\x65\x4c\x6f\x74\x70\x39\x49\x6f\x2d\x41\x5a\x49\x76\x78\x73\x4c\x37\x58\x69\x6d\x61\x62\x6b\x6b\x73\x61\x61\x38\x6e\x78\x69\x4f\x31\x7a\x46\x55\x55\x31";static TWITCH_PROFILE_URL="https://www.twitch.tv/{userLogin}";static REQUEST_TYPE={REVIEW:"review",REMOVAL:"removal"};static NOTICE_COLOR={REVIEW:11726246,REMOVAL:12467260};constructor(){document.addEventListener("gp:av.submit",({detail:a})=>{this.send(a)})}send({type:a,imageFile:b,avatarId:d,meta:{sender:c,senderId:f,keyHash:e,service:g}}){var h=

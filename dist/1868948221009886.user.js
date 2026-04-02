@@ -3,8 +3,9 @@
 // @namespace   Violentmonkey Scripts
 // @match       https://garticphone.com/*
 // @grant       GM_xmlhttpRequest
+// @require     https://gpmod.github.io/userscripts/vendor/xhr-parallel.js
 // @noframes
-// @version     1.11
+// @version     1.12
 // @author      -
 // @description 6/12/2022, 5:16:06 PM
 // @run-at      document-end
@@ -20,7 +21,7 @@
 'use strict';
 
 (function(){
-const SCRIPT_DATA={name:"Reference",version:"1.11",url:"https://gpmod.github.io/userscripts/dist/1868948221009886.user.js"};
+const SCRIPT_DATA={name:"Reference",version:"1.12",url:"https://gpmod.github.io/userscripts/dist/1868948221009886.user.js"};
 class SearchEngine{static IMAGE_TYPES=new Set("image/jpeg image/png image/gif image/webp image/svg+xml image/bmp".split(" "));static REQUEST_TYPE={SEARCH:"search",IMAGE:"image"};static searchXhr=null;static imageXhr=null;constructor(a){this.settings=a;this.query=null}async download(a,b=!1){return new Promise(async(c,d)=>{try{const e=await this.request(SearchEngine.REQUEST_TYPE.IMAGE,{url:a,responseType:"blob",asyncRequest:b,timeout:this.requestTimeout});if(e&&this.isAcceptedType(e.type)){const f=
 new FileReader;f.addEventListener("loadend",g=>{c({base64:f.result,type:e.type})});f.readAsDataURL(e)}else d(null)}catch{d(Error("Request error"))}})}isAcceptedType(a){return SearchEngine.IMAGE_TYPES.has(a)}request(a,{url:b,method:c,headers:d,data:e,timeout:f,responseType:g="json",asyncRequest:l}){a===SearchEngine.REQUEST_TYPE.SEARCH&&SearchEngine.searchXhr?.abort();SearchEngine.imageXhr?.abort();SearchEngine.timeoutTimer&&(clearTimeout(SearchEngine.timeoutTimer),SearchEngine.timeoutTimer=null);return new Promise((k,
 h)=>{let n;const q=(m,p)=>{if(f){if(!n)clearTimeout(SearchEngine.timeoutTimer),SearchEngine.timeoutTimer=setTimeout(()=>{p===SearchEngine.REQUEST_TYPE.SEARCH?SearchEngine.searchXhr?.abort():SearchEngine.imageXhr?.abort();h()},f);else if(Date.now()-n>f){h();return}n=Date.now()}},r=GM_xmlhttpRequest({url:b,method:c||"GET",headers:d||{},responseType:"json"===g?"text":g,data:e,anonymous:!0,timeout:f,onload:m=>{let p=m.response||m.responseText;m.response instanceof ArrayBuffer&&("json"===g||"text"===g)&&

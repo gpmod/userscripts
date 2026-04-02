@@ -7,8 +7,9 @@
 // @match       https://discord.com/*
 // @grant       GM_xmlhttpRequest
 // @grant       unsafeWindow
+// @require     https://gpmod.github.io/userscripts/vendor/xhr-parallel.js
 // @noframes
-// @version     2.6
+// @version     2.7
 // @author      -
 // @description 10/20/2021, 6:18:00 AM
 // @run-at      document-end
@@ -21,7 +22,7 @@
 'use strict';
 
 (function(){
-const SCRIPT_DATA={name:"Timelapse Player",version:"2.6",url:"https://gpmod.github.io/userscripts/dist/8033263611069205.user.js"};
+const SCRIPT_DATA={name:"Timelapse Player",version:"2.7",url:"https://gpmod.github.io/userscripts/dist/8033263611069205.user.js"};
 if("discord.com"===location.hostname){class h{static GP_FILE_FORMAT="gpimg";static GP_ATTACHMENT_URL_PATTERN=new RegExp(`^https?:\\/\\/cdn\\.discordapp\\.com\\/attachments\\/.+\\.${this.GP_FILE_FORMAT}\\b\\??`,"i");static GP_PLAYER_URL_PATTERN=RegExp("^https?:\\/\\/(gpmod|liliezzzz)\\.github\\.io\\/(gp-timelapse-player|player)\\/\\?url=","i");constructor(){this.utils=null;const a=this;window.open=new Proxy(window.open,{async apply(c,b,f){try{f[0]=await a.handleURL(f[0])}catch(e){}return Reflect.apply(c,
 b,f)}});HTMLAnchorElement.prototype.click=new Proxy(HTMLAnchorElement.prototype.click,{async apply(c,b,f){try{b.href=await a.handleURL(b.href)}catch(e){}return Reflect.apply(c,b,f)}})}async handleURL(a){if(h.GP_ATTACHMENT_URL_PATTERN.test(a))return this.isURLExpired(a)?await this.refreshURL(a):a;if(h.GP_PLAYER_URL_PATTERN.test(a)){const c=new URL(a),b=new URL(c.searchParams.get("url"));if(this.isURLExpired(b))return a=await this.refreshURL(b.href),c.searchParams.set("url",a),c.href}return a}isURLExpired(a){a=
 (new URL(a)).searchParams.get("ex");if(!a)return!0;a=1E3*parseInt(a,16);return isNaN(a)?!0:a<=Date.now()+36E5}async refreshURL(a){this.utils||(this.utils=this.buildUtils());a=this.utils.removeSignedUrlParameters(a);return await this.utils.maybeRefreshAttachmentUrl(a)}buildUtils(){const a=this.findModule(c=>"202803"===c)?.exports;if(a){const c=Object.keys(a).find(b=>{b=a[b].toString();return b.startsWith("async function ")&&b.includes("toURLSafe",15)});if(c){const b={};Object.defineProperty(b,"maybeRefreshAttachmentUrl",
